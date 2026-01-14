@@ -1,0 +1,16 @@
+DATABASE_URL="postgresql://user:password@localhost:5432/joinup?schema=public"
+
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-here"
+
+# Google Auth
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+
+# Naver Auth
+NAVER_CLIENT_ID=""
+NAVER_CLIENT_SECRET=""
+
+# Kakao Auth
+KAKAO_CLIENT_ID=""
+KAKAO_CLIENT_SECRET=""
