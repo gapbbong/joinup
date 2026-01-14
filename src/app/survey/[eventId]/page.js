@@ -28,13 +28,38 @@ export default function SurveyPage({ params }) {
     const event = { name: "2026 동계 워크숍", date: "2026-02-15", location: "평창 알펜시아" };
     const mockInvitations = ["홍길동", "김철수", "이영희", "박지성", "손흥민"];
 
+    // Keyboard Shortcuts
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (loading) return;
+
+            if (e.key === 'Enter' || e.key === ' ') {
+                if (step === 1) handleNextStep();
+                else if (step === 2 && selectedName) handleNextStep();
+                else if (step === 3 && isAttending !== null) handleNextStep();
+                e.preventDefault();
+            } else if (e.key === 'Escape') {
+                if (step > 1 && step < 4) {
+                    setStep(step - 1);
+                    e.preventDefault();
+                }
+            } else if (step === 3 && (e.key === '1' || e.key === '2')) {
+                setIsAttending(e.key === '1');
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [step, selectedName, isAttending, loading]);
+
     const handleNextStep = () => {
+        if (loading) return;
         setLoading(true);
         setTimeout(() => {
             setStep(step + 1);
             setLoading(false);
             window.scrollTo(0, 0);
-        }, 800);
+        }, 600);
     };
 
     if (status === 'loading') return null;
@@ -76,17 +101,17 @@ export default function SurveyPage({ params }) {
                         {status === 'unauthenticated' ? (
                             <button
                                 onClick={() => signIn()}
-                                className="w-full py-5 bg-slate-900 text-white rounded-3xl font-extrabold text-xl shadow-xl transition-all hover:bg-slate-800 hover:-translate-y-1"
+                                className="w-full py-5 bg-slate-900 text-white rounded-3xl font-extrabold text-xl shadow-xl transition-all hover:bg-slate-800 hover:-translate-y-1 active:scale-95 animate-pulse-subtle"
                             >
-                                소셜 로그인 후 응답하기
+                                소셜 로그인 후 응답하기 (Enter)
                             </button>
                         ) : (
                             <button
                                 onClick={handleNextStep}
-                                className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-extrabold text-xl shadow-xl transition-all hover:bg-indigo-700 hover:-translate-y-1 flex items-center justify-center gap-2"
+                                className={`w-full py-5 bg-indigo-600 text-white rounded-3xl font-extrabold text-xl shadow-xl transition-all hover:bg-indigo-700 hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2 ${loading ? 'opacity-70 scale-95' : ''}`}
                             >
-                                시작하기
-                                <ChevronRight className="w-6 h-6" />
+                                시작하기 (Enter)
+                                <ChevronRight className={`w-6 h-6 ${loading ? 'animate-ping' : ''}`} />
                             </button>
                         )}
                         <p className="text-center text-slate-400 text-sm">타인 명의 방지를 위해 소셜 로그인이 필요합니다.</p>
@@ -111,8 +136,8 @@ export default function SurveyPage({ params }) {
                                     key={name}
                                     onClick={() => setSelectedName(name)}
                                     className={`p-5 rounded-2xl border-2 text-left font-bold transition-all flex justify-between items-center ${selectedName === name
-                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                                            : 'border-slate-100 bg-white text-slate-600 hover:border-slate-200'
+                                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                                        : 'border-slate-100 bg-white text-slate-600 hover:border-slate-200'
                                         }`}
                                 >
                                     {name}
@@ -124,9 +149,15 @@ export default function SurveyPage({ params }) {
                         <button
                             disabled={!selectedName || loading}
                             onClick={handleNextStep}
-                            className="w-full py-5 bg-slate-900 text-white rounded-3xl font-extrabold text-xl shadow-xl transition-all hover:bg-slate-800 disabled:opacity-30 disabled:hover:translate-y-0"
+                            className={`w-full py-5 bg-slate-900 text-white rounded-3xl font-extrabold text-xl shadow-xl transition-all hover:bg-slate-800 active:scale-95 disabled:opacity-30 disabled:hover:translate-y-0 ${loading ? 'animate-pulse' : ''}`}
                         >
-                            {loading ? "확인 중..." : "본인 확인 완료"}
+                            {loading ? "확인 중..." : "본인 확인 완료 (Enter)"}
+                        </button>
+                        <button
+                            onClick={() => setStep(1)}
+                            className="w-full py-4 text-slate-400 font-bold hover:text-slate-600 active:scale-95 transition-all"
+                        >
+                            이전으로 돌아가기 (Esc)
                         </button>
                     </div>
                 )}
@@ -139,19 +170,19 @@ export default function SurveyPage({ params }) {
                             <div className="flex gap-4">
                                 <button
                                     onClick={() => setIsAttending(true)}
-                                    className={`flex-1 py-6 rounded-3xl border-2 font-bold text-lg transition-all flex flex-col items-center gap-3 ${isAttending === true ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-inner' : 'border-slate-100 text-slate-400'
+                                    className={`flex-1 py-6 rounded-3xl border-2 font-bold text-lg transition-all flex flex-col items-center gap-3 active:scale-95 ${isAttending === true ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-inner' : 'border-slate-100 text-slate-400'
                                         }`}
                                 >
-                                    <Check className="w-8 h-8" />
-                                    참석합니다
+                                    <Check className={`w-8 h-8 ${isAttending === true ? 'scale-110' : ''}`} />
+                                    참석합니다 (1)
                                 </button>
                                 <button
                                     onClick={() => setIsAttending(false)}
-                                    className={`flex-1 py-6 rounded-3xl border-2 font-bold text-lg transition-all flex flex-col items-center gap-3 ${isAttending === false ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-inner' : 'border-slate-100 text-slate-400'
+                                    className={`flex-1 py-6 rounded-3xl border-2 font-bold text-lg transition-all flex flex-col items-center gap-3 active:scale-95 ${isAttending === false ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-inner' : 'border-slate-100 text-slate-400'
                                         }`}
                                 >
-                                    <X className="w-8 h-8" />
-                                    불참합니다
+                                    <X className={`w-8 h-8 ${isAttending === false ? 'scale-110' : ''}`} />
+                                    불참합니다 (2)
                                 </button>
                             </div>
                         </div>
@@ -198,13 +229,21 @@ export default function SurveyPage({ params }) {
                             </div>
                         )}
 
-                        <button
-                            disabled={isAttending === null || loading}
-                            onClick={handleNextStep}
-                            className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-extrabold text-xl shadow-xl transition-all hover:bg-indigo-700"
-                        >
-                            제출하기
-                        </button>
+                        <div className="space-y-3">
+                            <button
+                                disabled={isAttending === null || loading}
+                                onClick={handleNextStep}
+                                className={`w-full py-5 bg-indigo-600 text-white rounded-3xl font-extrabold text-xl shadow-xl transition-all hover:bg-indigo-700 active:scale-95 disabled:opacity-30 ${loading ? 'animate-pulse' : ''}`}
+                            >
+                                {loading ? "전송 중..." : "응답 제출하기 (Enter)"}
+                            </button>
+                            <button
+                                onClick={() => setStep(2)}
+                                className="w-full py-4 text-slate-400 font-bold hover:text-slate-600 active:scale-95 transition-all"
+                            >
+                                본인 확인 단계로 (Esc)
+                            </button>
+                        </div>
                     </div>
                 )}
 

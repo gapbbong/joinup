@@ -17,7 +17,7 @@ export default function NewEvent() {
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         setLoading(true);
         // Logic will be added in the next step
         setTimeout(() => {
@@ -25,6 +25,21 @@ export default function NewEvent() {
             router.push('/dashboard');
         }, 1500);
     };
+
+    // Keyboard Shortcuts
+    React.useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (loading) return;
+            if (e.key === 'Escape') {
+                router.back();
+            } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                // Ctrl+Enter or Cmd+Enter to submit from anywhere (including textarea)
+                handleSubmit();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [loading, router]);
 
     return (
         <div className="min-h-screen bg-slate-50/50 pb-20">
@@ -126,18 +141,18 @@ export default function NewEvent() {
                         <button
                             disabled={loading}
                             type="submit"
-                            className="w-full py-5 bg-slate-900 text-white rounded-[32px] font-extrabold text-xl shadow-2xl shadow-slate-200 transition-all hover:bg-slate-800 hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3"
+                            className="w-full py-5 bg-slate-900 text-white rounded-[32px] font-extrabold text-xl shadow-2xl shadow-slate-200 transition-all hover:bg-slate-800 hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 animate-pulse-subtle"
                         >
                             {loading ? (
                                 <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
                             ) : (
                                 <>
                                     <Save className="w-6 h-6" />
-                                    행사 생성 및 링크 발급
+                                    행사 생성 및 링크 발급 (Ctrl+Enter)
                                 </>
                             )}
                         </button>
-                        <p className="text-center text-slate-400 text-sm">기본 정보와 명단은 생성 후에도 수정할 수 있습니다.</p>
+                        <p className="text-center text-slate-400 text-sm italic">Esc를 누르면 대시보드로 돌아갑니다.</p>
                     </div>
                 </form>
             </main>

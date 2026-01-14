@@ -17,7 +17,32 @@ export default function Dashboard() {
     const [events] = useState([
         { id: '1', name: '2026 동계 워크숍', date: '2026-02-15', status: '진행중', attendees: 45, total: 60 },
         { id: '2', name: '신년 네트워킹 파티', date: '2026-01-20', status: '마감임박', attendees: 28, total: 30 },
-    ]);
+    const [search, setSearch] = useState('');
+    const searchRef = React.useRef(null);
+
+    // Keyboard Shortcuts
+    React.useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Only trigger if not typing in search input
+            if (document.activeElement !== searchRef.current) {
+                if (e.key === 'n' || e.key === 'N') {
+                    window.location.href = '/events/new';
+                    e.preventDefault();
+                } else if (e.key === 's' || e.key === 'S' || e.key === '/') {
+                    searchRef.current?.focus();
+                    e.preventDefault();
+                }
+            } else {
+                if (e.key === 'Escape') {
+                    searchRef.current?.blur();
+                    setSearch('');
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     return (
         <div className="min-h-screen bg-slate-50/50">
@@ -92,11 +117,11 @@ export default function Dashboard() {
                     </div>
 
                     <div className="divide-y divide-slate-100">
-                        {events.length > 0 ? (
-                            events.map((event) => (
-                                <div key={event.id} className="p-6 transition-colors hover:bg-slate-50 flex items-center justify-between group">
+                        {events.filter(e => e.name.includes(search)).length > 0 ? (
+                            events.filter(e => e.name.includes(search)).map((event) => (
+                                <div key={event.id} className="p-6 transition-all hover:bg-indigo-50/30 flex items-center justify-between group active:scale-[0.99]">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex flex-col items-center justify-center font-bold text-xs">
+                                        <div className="w-12 h-12 bg-white border border-slate-100 shadow-sm text-indigo-600 rounded-xl flex flex-col items-center justify-center font-bold text-xs group-hover:border-indigo-200">
                                             <span>{event.date.split('-')[1]}월</span>
                                             <span>{event.date.split('-')[2]}일</span>
                                         </div>
@@ -118,11 +143,11 @@ export default function Dashboard() {
                                     <div className="flex items-center gap-2">
                                         <Link
                                             href={`/events/${event.id}/stats`}
-                                            className="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl transition-all hover:border-indigo-600 hover:text-indigo-600"
+                                            className="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl transition-all hover:border-indigo-600 hover:text-indigo-600 hover:shadow-md"
                                         >
                                             결과보기
                                         </Link>
-                                        <button className="p-2 text-slate-400 hover:text-slate-600">
+                                        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-white rounded-lg transition-colors">
                                             <MoreVertical className="w-5 h-5" />
                                         </button>
                                         <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
@@ -134,14 +159,18 @@ export default function Dashboard() {
                                 <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-400">
                                     <CalendarIcon className="w-10 h-10" />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">아직 진행중인 행사가 없습니다.</h3>
-                                <p className="text-slate-500 mb-8">새로운 일정을 만들어 참석 조사를 시작해 보세요!</p>
+                                <h3 className="text-xl font-bold text-slate-900 mb-2">
+                                    {search ? `'${search}' 검색 결과가 없습니다.` : '아직 진행중인 행사가 없습니다.'}
+                                </h3>
+                                <p className="text-slate-500 mb-8">
+                                    {search ? '검색어를 확인하거나 새로운 행사를 만들어보세요.' : '새로운 일정을 만들어 참석 조사를 시작해 보세요!'}
+                                </p>
                                 <Link
                                     href="/events/new"
-                                    className="inline-flex items-center gap-2 text-indigo-600 font-bold hover:underline"
+                                    className="inline-flex items-center gap-2 text-indigo-600 font-bold hover:underline group"
                                 >
                                     기념비적인 첫 행사 만들기
-                                    <ChevronRight className="w-4 h-4" />
+                                    <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
                             </div>
                         )}
