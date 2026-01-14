@@ -17,7 +17,7 @@ export default function Dashboard() {
     const [events] = useState([
         { id: '1', name: '2026 동계 워크숍', date: '2026-02-15', status: '진행중', attendees: 45, total: 60 },
         { id: '2', name: '신년 네트워킹 파티', date: '2026-01-20', status: '마감임박', attendees: 28, total: 30 },
-    const [search, setSearch] = useState('');
+    ]);
     const searchRef = React.useRef(null);
 
     // Keyboard Shortcuts
