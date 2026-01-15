@@ -67,12 +67,12 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-2xl shadow-indigo-200 transition-all hover:bg-indigo-700 hover:-translate-y-1">
+            <Link href="/events/new" className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-2xl shadow-indigo-200 transition-all hover:bg-indigo-700 hover:-translate-y-1 text-center">
               행사 생성하기
-            </button>
-            <button className="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-2xl font-bold text-lg transition-all hover:bg-slate-50">
+            </Link>
+            <Link href="/events" className="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-2xl font-bold text-lg transition-all hover:bg-slate-50 text-center">
               서비스 둘러보기
-            </button>
+            </Link>
           </div>
         </div>
       </section>
